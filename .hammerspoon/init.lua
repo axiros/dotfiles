@@ -26,7 +26,8 @@ evp      = evte.properties
 
 drag_last = now(); drag_intv = 0.01 -- we only synth drags from time to time
 
-mp = {['x']=0, ['y']=0} -- mouse point. coords and last posted event
+mp     = {['x']=0, ['y']=0} -- mouse point. coords and last posted event
+lastd  = {['x']=0, ['y']=0} -- mouse point. coords and last posted event
 l = hs.logger.new('keybmouse', 'debug')
 dmp = hs.inspect
 
@@ -44,14 +45,23 @@ handle_drag = evt.new(handled, function(e)
     local dx =  e:getProperty(evp.mouseEventDeltaX)
     local dy =  e:getProperty(evp.mouseEventDeltaY)
     --[[
-    if math.abs(dx) > 400 or math.abs(dy) > 400 then
-        handle_drag:stop()
-        post_evt(2)
-        return nil
-        -- dx = 0; dy = 0;
+    if math.abs(dx) > 400 then
+        dx = - lastd.x * 10
+        drag_last = 0
+        mp.x = mp.x + dx
+        hs.mouse.setAbsolutePosition(mp)
+        dx = 0
+    else
+        lastd.x = dx
     end
-    --]]
-
+    if math.abs(dy) > 400 then
+        dy = - lastd.y
+        drag_last = 0
+    else
+        lastd.y = dy
+    end
+    -- ]]
+    -- lastd.x = dx; lastd.y = dy
     mp.x = mp.x + dx; mp.y = mp.y + dy
 
     -- giving the key up a chance:
@@ -78,6 +88,7 @@ end
 -- mapped by karabiner elements to caps lock:
 hyper = {"left_option", "left_control", "left_command", "left_shift"}
 hs.hotkey.bind(hyper, "d", function(event)
+    --lastd.x = 0; lastd.y = 0
     post_evt(1)
     handle_drag:start()
   end
