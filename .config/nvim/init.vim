@@ -210,13 +210,6 @@ map <Leader>e Otry:<Esc>j^i<TAB><Esc>oexcept Exception as ex:<CR>import pdb;pdb.
 map <Leader>ts :Tabularize/(<CR><bar>:Tabularize/)<CR><bar>:Tabularize/:<CR>
 map <Leader>t\| :Tabularize/\|<CR>
 
-" at a closing bracket of a markdown link hit ,ar. It will copy the word within
-" the [] and append an identical set of brackets after it (lp after jumping
-" back to the end via %. Then it inserts a jump mark "l" for link,
-" and goes to the end of the file where it adds the link def, so that you can
-" paste the url. after pasting you jump back via `l
-map <Leader>ar a[]<Esc>hh%lyi[h%lpla <Esc>mlGo[<Esc>pa]: <Esc>i 
-
 " missing the z key, this collapses and opens all syntax folds:
 map <Leader>mf zM<CR>
 map <Leader>mr zR<CR>
@@ -248,38 +241,9 @@ noremap <Leader>f :set nofoldenable<CR>    " Unfold everything
 "     back:  
 "let g:jedi#goto_command = "<leader>h"    
 
-autocmd FilterWritePre * if &diff | set wrap linebreak nolist | endif
-augroup markdown
-    au!
-    "au BufNewFile,BufRead *.md,*.markdown set wrap linebreak nolist
-    au BufNewFile,BufRead *.md,*.markdown setlocal filetype=ghmarkdown
-augroup END
-
-au BufReadPost *.md set syntax=markdown
-autocmd BufRead,BufNewFile   *.md setlocal wrap linebreak
-autocmd BufRead,BufNewFile   *.md setlocal colorcolumn=0
-autocmd BufRead,BufNewFile   *.md colorscheme iceberg
-"autocmd BufRead,BufNewFile   *.md let g:pencil_higher_contrast_ui = 1
-let g:markdown_fenced_languages = ['html', 'python', 'json', 'bash=sh', 'js=javascript']
-set foldcolumn=2
-let g:markdown_folding=1
-
-" Folding
-" Function for markdown folding
-function! MarkdownLevel()
-    let h = matchstr(getline(v:lnum), '^#\+')
-    if empty(h)
-        return "="
-    else
-        return ">" . len(h)
-    endif
-endfunction
 set foldmethod=syntax
-augroup filetypes_folding
-    autocmd!
-    autocmd BufNewFile,BufRead *.md setlocal foldexpr=MarkdownLevel()
-    autocmd BufNewFile,BufRead *.md setlocal foldmethod=expr foldlevel=1
-    autocmd Filetype ghmarkdown setlocal foldlevel=2
-augroup END
 
+autocmd FilterWritePre * if &diff | set wrap linebreak nolist | endif
+au BufReadPost *.md set syntax=markdown
+set foldcolumn=2
 
